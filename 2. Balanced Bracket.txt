@@ -1,0 +1,50 @@
+2. Balanced Bracket (Score: 30)
+
+<?php
+
+function isBalanced($s) {
+    // Inisialisasi stack
+    $stack = [];
+    
+    // Mapping untuk pasangan bracket
+    $matching_bracket = [
+        ')' => '(',
+        '}' => '{',
+        ']' => '['
+    ];
+    
+    // Iterasi setiap karakter dalam string
+    for ($i = 0; $i < strlen($s); $i++) {
+        $char = $s[$i];
+        
+        // Jika karakter adalah bracket pembuka, masukkan ke stack
+        if ($char == '(' || $char == '{' || $char == '[') {
+            array_push($stack, $char);
+        }
+        // Jika karakter adalah bracket penutup
+        elseif ($char == ')' || $char == '}' || $char == ']') {
+            // Periksa apakah stack kosong atau bracket tidak cocok
+            if (empty($stack) || array_pop($stack) != $matching_bracket[$char]) {
+                return "NO";
+            }
+        }
+    }
+    
+    // Jika stack kosong setelah iterasi, maka bracket seimbang
+    return empty($stack) ? "YES" : "NO";
+}
+
+// Contoh penggunaan
+$input1 = "{[()]}";
+$input2 = "{[(])}";
+$input3 = "{(([])[()])[]}";
+
+echo isBalanced($input1) . "\n";  // Output: YES
+echo isBalanced($input2) . "\n";  // Output: NO
+echo isBalanced($input3) . "\n";  // Output: YES
+?>
+
+
+Kompleksitas:
+Waktu (Time Complexity): O(n), dimana n adalah panjang string. Kita hanya perlu melakukan satu pass melalui string, dan operasi push dan pop pada stack adalah O(1).
+Ruang (Space Complexity): O(n) dalam kasus terburuk, dimana semua karakter dalam string adalah bracket pembuka, sehingga semuanya disimpan di stack.

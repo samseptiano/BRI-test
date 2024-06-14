@@ -1,0 +1,54 @@
+<?php
+
+function calculate_weighted_strings($s, $queries) {
+    // Fungsi untuk menghitung bobot dari suatu karakter
+    function char_weight($c) {
+        return ord($c) - ord('a') + 1;
+    }
+
+    // Set untuk menyimpan semua bobot substring yang ditemukan
+    $weights = array();
+
+    $i = 0;
+    $length = strlen($s);
+    while ($i < $length) {
+        $current_char = $s[$i];
+        $weight = char_weight($current_char);
+        // Tambahkan bobot karakter tunggal
+        if (!in_array($weight, $weights)) {
+            $weights[] = $weight;
+        }
+
+        // Hitung bobot untuk substring dengan karakter berulang
+        $count = 1;
+        while ($i + 1 < $length && $s[$i + 1] == $current_char) {
+            $i++;
+            $count++;
+            $total_weight = $weight * $count;
+            if (!in_array($total_weight, $weights)) {
+                $weights[] = $total_weight;
+            }
+        }
+
+        $i++;
+    }
+
+    // Periksa setiap query apakah ada di set bobot
+    $result = array();
+    foreach ($queries as $query) {
+        if (in_array($query, $weights)) {
+            $result[] = "Yes";
+        } else {
+            $result[] = "No";
+        }
+    }
+
+    return $result;
+}
+
+// Contoh penggunaan
+$s = "abbcccd";
+$queries = [1, 3, 9, 8];
+$result = calculate_weighted_strings($s, $queries);
+print_r($result);  // Output: ['Yes', 'Yes', 'Yes', 'No']
+?>

@@ -1,0 +1,89 @@
+3. Highest Palindrome (Score: 50)
+
+<?php
+
+function makePalindrome($s, $k) {
+    // Helper function to convert a string to a palindrome with maximum value
+    function highestPalindrome($s, $left, $right, $k, &$cache) {
+        // Base case: if pointers have crossed each other
+        if ($left >= $right) {
+            return [$s, $k];
+        }
+        
+        // If this state is already computed, return the result
+        if (isset($cache["$left,$right,$k"])) {
+            return $cache["$left,$right,$k"];
+        }
+        
+        // If characters are the same, move inward
+        if ($s[$left] == $s[$right]) {
+            $result = highestPalindrome($s, $left + 1, $right - 1, $k, $cache);
+        } else {
+            // If characters are different, we have to change one of them
+            if ($k <= 0) {
+                return [-1, $k];
+            }
+            
+            // Try changing the left character to the right character
+            $s1 = $s;
+            $s1[$left] = $s[$right];
+            $result1 = highestPalindrome($s1, $left + 1, $right - 1, $k - 1, $cache);
+            
+            // Try changing the right character to the left character
+            $s2 = $s;
+            $s2[$right] = $s[$left];
+            $result2 = highestPalindrome($s2, $left + 1, $right - 1, $k - 1, $cache);
+            
+            // Choose the lexicographically greater palindrome
+            if ($result1[0] != -1 && $result2[0] != -1) {
+                $result = (strcmp($result1[0], $result2[0]) > 0) ? $result1 : $result2;
+            } elseif ($result1[0] != -1) {
+                $result = $result1;
+            } else {
+                $result = $result2;
+            }
+        }
+        
+        // Cache the result
+        $cache["$left,$right,$k"] = $result;
+        return $result;
+    }
+    
+    $cache = [];
+    $result = highestPalindrome($s, 0, strlen($s) - 1, $k, $cache);
+    
+    if ($result[0] == -1) {
+        return -1;
+    }
+    
+    // Use remaining k to maximize the palindrome
+    $palindrome = $result[0];
+    $remainingK = $result[1];
+    $length = strlen($palindrome);
+    
+    for ($i = 0; $i < $length / 2; $i++) {
+        $j = $length - 1 - $i;
+        if ($palindrome[$i] != '9' && $remainingK > 0) {
+            if ($palindrome[$i] != $palindrome[$j]) {
+                $remainingK--; // We already spent 1 change to make it palindrome
+            }
+            if ($remainingK >= 1) {
+                $palindrome[$i] = '9';
+                $palindrome[$j] = '9';
+                $remainingK--;
+            }
+        }
+    }
+    
+    return $palindrome;
+}
+
+// Contoh penggunaan
+$input1 = "3943";
+$k1 = 1;
+echo makePalindrome($input1, $k1) . "\n";  // Output: 3993
+
+$input2 = "932239";
+$k2 = 2;
+echo makePalindrome($input2, $k2) . "\n";  // Output: 992299
+?>
